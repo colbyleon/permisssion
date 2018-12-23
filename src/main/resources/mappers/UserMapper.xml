@@ -2,6 +2,32 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.idreamsky.permission.dao">
+<mapper namespace="com.idreamsky.permission.dao.UserMapper">
+
+    <select id="findByKeyword" resultType="com.idreamsky.permission.model.User">
+        select *
+        from sys_user
+        where telephone = #{keyword}
+              or mail = #{keyword}
+              or username = #{keyword}
+    </select>
+
+    <select id="countByMail" resultType="java.lang.Integer">
+        select count(0)
+        from sys_user
+        where mail = #{mail}
+        <if test="id != null">
+            and id != #{id}
+        </if>
+    </select>
+
+    <select id="countByTelephone" resultType="java.lang.Integer">
+        select count(0)
+        from sys_user
+        where telephone = #{telephone}
+        <if test="id != null">
+            and id != #{id}
+        </if>
+    </select>
 
 </mapper>

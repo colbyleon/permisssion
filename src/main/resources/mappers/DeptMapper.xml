@@ -2,4 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.idreamsky.permission.dao.DeptMapper">
 
+    <update id="batchUpdateLevel" parameterType="com.idreamsky.permission.model.Dept">
+        <foreach collection="deptList" item="dept" separator=";">
+            update sys_dept set level = #{dept.level} where id = #{dept.id}
+        </foreach>
+    </update>
 </mapper>

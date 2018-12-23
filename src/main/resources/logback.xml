@@ -26,7 +26,11 @@
     <!--<logger name="xxx" level="info" additivity="false">-->
         <!--<appender-ref ref="permission"/>-->
     <!--</logger>-->
-
+    
+    <logger name="com.idreamsky.permission.dao" level="debug" additivity="false">
+        <appender-ref ref="STDOUT"/>
+    </logger>
+    
     <!-- trace < debug < info < warn < error -->
     <root level="info">
         <appender-ref ref="STDOUT"/>

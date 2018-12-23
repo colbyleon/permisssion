@@ -17,21 +17,27 @@ import java.util.Map;
 public class HttpInterceptor extends HandlerInterceptorAdapter {
 
     private static final String START_TIME = "requestStartTime";
+    private static final String INTERCEPT_REGEX = "^.*/\\w+(?:\\.html)?$";
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String url = request.getRequestURI();
-        Map<String, String[]> parameterMap = request.getParameterMap();
-        log.info("request url:{}, params:{}", url, JsonMapper.toJSONString(parameterMap));
-        request.setAttribute(START_TIME, System.currentTimeMillis());
+
+        if (needIntercept(url)) {
+            Map<String, String[]> parameterMap = request.getParameterMap();
+            log.info("request url:{}, params:{}", url, JsonMapper.toJSONString(parameterMap));
+            request.setAttribute(START_TIME, System.currentTimeMillis());
+        }
         return true;
     }
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
         String url = request.getRequestURI();
-        long startTime = (long) request.getAttribute(START_TIME);
-        log.info("request finished. url:{}, cost:{}", url, System.currentTimeMillis() - startTime);
+        if (needIntercept(url)) {
+            long startTime = (long) request.getAttribute(START_TIME);
+            log.info("request finished. url:{}, cost:{}", url, System.currentTimeMillis() - startTime);
+        }
     }
 
     @Override
@@ -43,5 +49,14 @@ public class HttpInterceptor extends HandlerInterceptorAdapter {
             log.info("request exception. url:{}, cost:{}, params:{}", url, System.currentTimeMillis() - startTime
                     , JsonMapper.toJSONString(parameterMap));
         }
+        removerThreadLocalInfo();
+    }
+
+    public void removerThreadLocalInfo(){
+        RequestHolder.remove();
+    }
+
+    private boolean needIntercept(String url) {
+        return url.matches(INTERCEPT_REGEX);
     }
 }

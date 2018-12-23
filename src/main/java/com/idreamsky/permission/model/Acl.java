@@ -5,8 +5,8 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.time.LocalDateTime;
 import java.io.Serializable;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+
+import lombok.*;
 import lombok.experimental.Accessors;
 
 /**
@@ -18,8 +18,11 @@ import lombok.experimental.Accessors;
  * @since 2018-12-15
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = false,of = "id")
 @Accessors(chain = true)
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @TableName("sys_acl")
 public class Acl implements Serializable {
 
@@ -64,7 +67,7 @@ public class Acl implements Serializable {
     /**
      * 排序
      */
-    private String seq;
+    private Integer seq;
 
     /**
      * 备注

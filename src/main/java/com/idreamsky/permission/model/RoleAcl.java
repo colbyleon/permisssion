@@ -7,7 +7,10 @@ import java.time.LocalDateTime;
 import java.io.Serializable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
+import org.apache.ibatis.annotations.AutomapConstructor;
 
 /**
  * <p>
@@ -20,6 +23,7 @@ import lombok.experimental.Accessors;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
+@NoArgsConstructor
 @TableName("sys_role_acl")
 public class RoleAcl implements Serializable {
 
@@ -57,4 +61,8 @@ public class RoleAcl implements Serializable {
     private String operateIp;
 
 
+    public RoleAcl(Integer roleId, Integer aclId) {
+        this.roleId = roleId;
+        this.aclId = aclId;
+    }
 }

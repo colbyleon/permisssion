@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.io.Serializable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 /**
@@ -20,6 +21,7 @@ import lombok.experimental.Accessors;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
+@NoArgsConstructor
 @TableName("sys_role_user")
 public class RoleUser implements Serializable {
 
@@ -57,4 +59,8 @@ public class RoleUser implements Serializable {
     private String operateIp;
 
 
+    public RoleUser(Integer roleId, Integer userId) {
+        this.roleId = roleId;
+        this.userId = userId;
+    }
 }

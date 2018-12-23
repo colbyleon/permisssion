@@ -27,7 +27,7 @@ public class DeptParam {
     /**
      * 上级部门id
      */
-    private Integer parentId;
+    private Integer parentId = 0;
 
     /**
      * 排序字段

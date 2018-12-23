@@ -6,20 +6,17 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
            http://www.springframework.org/schema/beans/spring-beans.xsd
            http://www.springframework.org/schema/mvc
-           http://www.springframework.org/schema/mvc/spring-mvc.xsd
-           http://www.springframework.org/schema/context
-           http://www.springframework.org/schema/context/spring-context.xsd">
+           http://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
     <!-- spring mvc 注解驱动 -->
     <mvc:annotation-driven/>
-
     <!-- 启动包扫描功能 -->
     <context:component-scan base-package="com.idreamsky.permission"/>
-    
+
     <!-- 返回modelAndView时指定jsonView，直接传回json -->
     <bean id="jsonView" class="org.springframework.web.servlet.view.json.MappingJackson2JsonView"/>
     <!-- 配合jsonView使用 -->
-    <bean class="org.springframework.web.servlet.view.BeanNameViewResolver" />
+    <bean class="org.springframework.web.servlet.view.BeanNameViewResolver"/>
 
     <!-- 视图解析 -->
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
@@ -31,4 +28,6 @@
         <bean class="com.idreamsky.permission.common.HttpInterceptor"/>
     </mvc:interceptors>
 
+    <!-- 静态资源放行 -->
+    <mvc:default-servlet-handler/>
 </beans>

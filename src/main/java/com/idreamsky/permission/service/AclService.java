@@ -32,6 +32,8 @@ import java.util.List;
 public class AclService {
     @Resource
     private AclMapper aclMapper;
+    @Resource
+    private LogService logService;
 
     public void save(AclParam param) {
         BeanValidator.check(param);
@@ -48,6 +50,7 @@ public class AclService {
         acl.setOperateTime(LocalDateTime.now());
 
         aclMapper.insert(acl);
+        logService.saveAclLog(null, acl);
     }
 
     public void update(AclParam param) {
@@ -68,6 +71,7 @@ public class AclService {
         after.setOperateTime(LocalDateTime.now());
 
         aclMapper.updateById(after);
+        logService.saveAclLog(before, after);
     }
 
     public PageResult<Acl> getPageByAclModuleId(int aclModuleId, PageQuery page) {

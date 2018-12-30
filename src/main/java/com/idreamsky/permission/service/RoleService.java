@@ -17,6 +17,7 @@ import com.idreamsky.permission.model.User;
 import com.idreamsky.permission.param.RoleParam;
 import com.idreamsky.permission.util.BeanValidator;
 import com.idreamsky.permission.util.IpUtil;
+import org.junit.After;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -43,6 +44,8 @@ public class RoleService {
     private RoleAclMapper roleAclMapper;
     @Resource
     private UserMapper userMapper;
+    @Resource
+    private LogService logService;
 
     public void save(RoleParam param) {
         BeanValidator.check(param);
@@ -57,6 +60,7 @@ public class RoleService {
         role.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
 
         roleMapper.insert(role);
+        logService.saveRoleLog(null,role);
     }
 
     public void update(RoleParam param) {
@@ -68,14 +72,15 @@ public class RoleService {
         Role before = roleMapper.selectById(param.getId());
         Preconditions.checkNotNull(before, "待更新的角色不存在");
 
-        Role role = Role.builder().id(param.getId()).name(param.getName()).status(param.getStatus())
+        Role after = Role.builder().id(param.getId()).name(param.getName()).status(param.getStatus())
                 .type(param.getType()).remark(param.getRemark()).build();
 
-        role.setOperator(RequestHolder.getCurrentUser().getUsername());
-        role.setOperateTime(LocalDateTime.now());
-        role.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
+        after.setOperator(RequestHolder.getCurrentUser().getUsername());
+        after.setOperateTime(LocalDateTime.now());
+        after.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
 
-        roleMapper.updateById(role);
+        roleMapper.updateById(after);
+        logService.saveRoleLog(before,after);
     }
 
     public List<Role> getAll(){

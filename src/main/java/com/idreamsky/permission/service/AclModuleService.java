@@ -38,6 +38,8 @@ public class AclModuleService {
     private AclModuleMapper aclModuleMapper;
     @Resource
     private AclMapper aclMapper;
+    @Resource
+    private LogService logService;
 
     public void save(AclModuleParam param) {
         BeanValidator.check(param);
@@ -54,6 +56,7 @@ public class AclModuleService {
         aclModule.setOperateTime(LocalDateTime.now());
 
         aclModuleMapper.insert(aclModule);
+        logService.saveAclModuleLog(null, aclModule);
     }
 
     public void update(AclModuleParam param) {
@@ -74,6 +77,7 @@ public class AclModuleService {
         after.setOperateTime(LocalDateTime.now());
 
         updateWithChild(before, after);
+        logService.saveAclModuleLog(before, after);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -107,6 +111,7 @@ public class AclModuleService {
             throw new ParamException("当前权限模块下还有权限点，无法删除");
         }
         aclModuleMapper.deleteById(aclModuleId);
+        logService.saveAclModuleLog(aclModule, null);
     }
 
     private boolean checkExist(Integer parentId, String name, Integer id) {

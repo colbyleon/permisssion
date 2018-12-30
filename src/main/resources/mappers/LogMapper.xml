@@ -2,4 +2,42 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.idreamsky.permission.dao.LogMapper">
 
+
+
+    <select id="countBySearchDto" resultType="java.lang.Integer">
+        select count(0)
+        from sys_log
+        <include refid="whereCondition"/>
+    </select>
+
+    <select id="getPageListBySearchDto" resultType="com.idreamsky.permission.model.LogWithBlobs">
+        select *
+        from sys_log
+        <include refid="whereCondition"/>
+        order by operate_time desc
+        limit #{page.offset},#{page.pageSize}
+    </select>
+
+    <sql id="whereCondition">
+        <where>
+            <if test="dto.type !=null">
+                and type = #{dto.type}
+            </if>
+            <if test="dto.beforeSeg !=null and dto.beforeSeg != ''">
+                and old_value like #{dto.beforeSeg}
+            </if>
+            <if test="dto.afterSeg !=null and dto.afterSeg != ''">
+                and new_value like #{dto.afterSeg}
+            </if>
+            <if test="dto.operator !=null and dto.operator != ''">
+                and operator like #{dto.operator}
+            </if>
+            <if test="dto.fromTime != null">
+                and operate_time >= #{dto.fromTime}
+            </if>
+            <if test="dto.toTime !=null ">
+                and operate_time &lt;= #{dto.toTime}
+            </if>
+        </where>
+    </sql>
 </mapper>

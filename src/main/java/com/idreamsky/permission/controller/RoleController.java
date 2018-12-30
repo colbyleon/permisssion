@@ -78,7 +78,7 @@ public class RoleController {
             @RequestParam("roleId") Integer roleId,
             @RequestParam(value = "aclIds", required = false, defaultValue = "") String aclIds) {
         List<Integer> aclIdList = StringUtil.splitToListInt(aclIds);
-        roleAclService.changRoleAcls(roleId, aclIdList);
+        roleAclService.changeRoleAcls(roleId, aclIdList);
         return JsonData.success();
     }
 
@@ -88,7 +88,7 @@ public class RoleController {
             @RequestParam("roleId") Integer roleId,
             @RequestParam(value = "userIds", required = false, defaultValue = "") String userIds) {
         List<Integer> userIdList = StringUtil.splitToListInt(userIds);
-        roleUserService.changRoleUsers(roleId, userIdList);
+        roleUserService.changeRoleUsers(roleId, userIdList);
         return JsonData.success();
     }
 

@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
 
 
@@ -24,8 +23,8 @@ public class JsonMapper {
                 .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
                 .setFilterProvider(new SimpleFilterProvider().setFailOnUnknownId(false))
                 .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
-                .findAndRegisterModules()
-                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+                .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+                .findAndRegisterModules();
     }
 
     public static <T> String toJSONString(T src) {

@@ -107,8 +107,8 @@ public class CoreService {
     }
 
     private boolean isSuperAdmin() {
-        return false;
-//        String username = RequestHolder.getCurrentUser().getUsername();
-//        return "admin".equalsIgnoreCase(username);
+//        return false;
+        String username = RequestHolder.getCurrentUser().getUsername();
+        return "admin".equalsIgnoreCase(username);
     }
 }

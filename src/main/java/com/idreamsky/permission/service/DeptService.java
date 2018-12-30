@@ -37,6 +37,8 @@ public class DeptService {
     private DeptMapper deptMapper;
     @Resource
     private UserMapper userMapper;
+    @Resource
+    private LogService logService;
 
     public void save(DeptParam param) {
         BeanValidator.check(param);
@@ -53,6 +55,7 @@ public class DeptService {
         dept.setOperateTime(LocalDateTime.now());
 
         deptMapper.insert(dept);
+        logService.saveDeptLog(null, dept);
     }
 
     public void update(DeptParam param) {
@@ -73,6 +76,7 @@ public class DeptService {
         after.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
         after.setOperateTime(LocalDateTime.now());
         updateWithChild(before, after);
+        logService.saveDeptLog(before, after);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -107,6 +111,7 @@ public class DeptService {
         }
 
         deptMapper.deleteById(deptId);
+        logService.saveDeptLog(dept, null);
     }
 
     private boolean checkExist(Integer parentId, String deptName, Integer deptId) {

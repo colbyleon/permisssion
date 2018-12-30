@@ -31,6 +31,8 @@ public class UserService {
 
     @Resource
     private UserMapper userMapper;
+    @Resource
+    private LogService logService;
 
     public void save(UserParam param) {
         BeanValidator.check(param);
@@ -52,6 +54,7 @@ public class UserService {
         // TODO: sendEmail
 
         userMapper.insert(user);
+        logService.saveUserLog(null,user);
     }
 
     public void update(UserParam param) {
@@ -73,6 +76,7 @@ public class UserService {
         after.setOperateTime(LocalDateTime.now());
 
         userMapper.updateById(after);
+        logService.saveUserLog(before,after);
     }
 
     public User findByKeyword(String keyword) {

@@ -3,10 +3,14 @@ package com.idreamsky.permission.service;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.idreamsky.permission.beans.LogType;
 import com.idreamsky.permission.common.RequestHolder;
+import com.idreamsky.permission.dao.LogMapper;
 import com.idreamsky.permission.dao.RoleAclMapper;
+import com.idreamsky.permission.model.LogWithBlobs;
 import com.idreamsky.permission.model.RoleAcl;
 import com.idreamsky.permission.util.IpUtil;
+import com.idreamsky.permission.util.JsonMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,16 +32,19 @@ import java.util.stream.Collectors;
 public class RoleAclService {
     @Resource
     private RoleAclMapper roleAclMapper;
+    @Resource
+    private LogMapper logMapper;
 
-    public void changRoleAcls(Integer roleId, List<Integer> aclIdList) {
+    @Transactional(rollbackFor = Exception.class)
+    public void changeRoleAcls(Integer roleId, List<Integer> aclIdList) {
         List<Integer> originAclIdList = roleAclMapper.getAclIdListByRoleIdList(Collections.singletonList(roleId));
         if (originAclIdList.equals(aclIdList)) {
             return;
         }
         updateRoleAcls(roleId, aclIdList);
+        saveRoleAclLog(roleId,originAclIdList,aclIdList);
     }
 
-    @Transactional(rollbackFor = Exception.class)
     public void updateRoleAcls(Integer roleId, List<Integer> aclIdList) {
         UpdateWrapper<RoleAcl> deleteByRoleId = Wrappers.<RoleAcl>update().eq("role_id", roleId);
         roleAclMapper.delete(deleteByRoleId);
@@ -55,5 +62,18 @@ public class RoleAclService {
                 })
                 .collect(Collectors.toList());
         roleAclMapper.batchInsert(roleAcls);
+    }
+
+    public void saveRoleAclLog(int roleId, List<Integer> before, List<Integer> after) {
+        LogWithBlobs log = new LogWithBlobs();
+        log.setType(LogType.TYPE_ROLE_ACL);
+        log.setTargetId(roleId);
+        log.setOldValue(before == null ? "" : JsonMapper.toJSONString(before));
+        log.setNewValue(after == null ? "" : JsonMapper.toJSONString(after));
+        log.setOperator(RequestHolder.getCurrentUser().getUsername());
+        log.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
+        log.setOperateTime(LocalDateTime.now());
+        log.setStatus(1);
+        logMapper.insert(log);
     }
 }

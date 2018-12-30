@@ -43,7 +43,7 @@ public class RoleUserService{
     }
 
     public void changRoleUsers(Integer roleId, List<Integer> userIdList) {
-        List<Integer> originUserIdList = roleUserMapper.getUserIdListByRoleIdList(roleId);
+        List<Integer> originUserIdList = roleUserMapper.getUserIdListByRoleId(roleId);
         if (originUserIdList.equals(userIdList)) {
             return;
         }

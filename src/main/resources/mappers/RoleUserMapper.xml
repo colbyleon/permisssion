@@ -23,6 +23,9 @@
     <select id="getUserIdListByRoleIdList" resultType="java.lang.Integer">
         select user_id
         from sys_role_user
-        where role_id = #{roleId}
+        where role_id in
+        <foreach collection="roleIdList" item="roleId" open="(" separator="," close=")">
+            #{roleId}
+        </foreach>
     </select>
 </mapper>

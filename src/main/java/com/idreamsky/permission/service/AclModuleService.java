@@ -5,10 +5,13 @@ import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.base.Preconditions;
 import com.idreamsky.permission.common.RequestHolder;
+import com.idreamsky.permission.dao.AclMapper;
 import com.idreamsky.permission.dao.AclModuleMapper;
 import com.idreamsky.permission.exception.ParamException;
+import com.idreamsky.permission.model.Acl;
 import com.idreamsky.permission.model.AclModule;
 import com.idreamsky.permission.model.Dept;
+import com.idreamsky.permission.model.User;
 import com.idreamsky.permission.param.AclModuleParam;
 import com.idreamsky.permission.util.BeanValidator;
 import com.idreamsky.permission.util.IpUtil;
@@ -33,6 +36,8 @@ import java.util.List;
 public class AclModuleService {
     @Resource
     private AclModuleMapper aclModuleMapper;
+    @Resource
+    private AclMapper aclMapper;
 
     public void save(AclModuleParam param) {
         BeanValidator.check(param);
@@ -80,13 +85,28 @@ public class AclModuleService {
             List<AclModule> subAclModuleList = aclModuleMapper.selectList(Wrappers.<AclModule>query().like("level", oldLevelPrefix + ".%"));
             if (CollectionUtils.isNotEmpty(subAclModuleList)) {
                 for (AclModule aclModule : subAclModuleList) {
-                    // 替换部门level前缀
+                    // 替换权限模块level前缀
                     aclModule.setLevel(aclModule.getLevel().replace(oldLevelPrefix, newLevelPrefix));
                 }
                 aclModuleMapper.batchUpdateLevel(subAclModuleList);
             }
         }
         aclModuleMapper.updateById(after);
+    }
+
+    public void delete(int aclModuleId) {
+        AclModule aclModule = aclModuleMapper.selectById(aclModuleId);
+        Preconditions.checkNotNull(aclModule, "待删除的权限模块不存在");
+
+        Integer subModuleCount = aclModuleMapper.selectCount(Wrappers.<AclModule>query().eq("parent_id", aclModuleId));
+        if (subModuleCount > 0) {
+            throw new ParamException("当前权限模块下还有子权限模块，无法删除");
+        }
+        Integer aclCount = aclMapper.selectCount(Wrappers.<Acl>query().eq("acl_module_id", aclModuleId));
+        if (aclCount > 0) {
+            throw new ParamException("当前权限模块下还有权限点，无法删除");
+        }
+        aclModuleMapper.deleteById(aclModuleId);
     }
 
     private boolean checkExist(Integer parentId, String name, Integer id) {

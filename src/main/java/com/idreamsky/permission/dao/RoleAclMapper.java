@@ -27,4 +27,11 @@ public interface RoleAclMapper extends BaseMapper<RoleAcl> {
      * @param roleAclList 角色权限关系
      */
     void batchInsert(@Param("roleAclList") List<RoleAcl> roleAclList);
+
+    /**
+     * aclId -> roleIds
+     * @param aclId 权限点id
+     * @return 角色ids
+     */
+    List<Integer> getRoleIdListByAclId(int aclId);
 }

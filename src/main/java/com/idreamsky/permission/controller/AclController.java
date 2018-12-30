@@ -1,19 +1,22 @@
 package com.idreamsky.permission.controller;
 
 
+import com.google.common.collect.Maps;
 import com.idreamsky.permission.beans.PageQuery;
-import com.idreamsky.permission.beans.PageResult;
 import com.idreamsky.permission.common.JsonData;
-import com.idreamsky.permission.model.Acl;
-import com.idreamsky.permission.param.AclModuleParam;
+import com.idreamsky.permission.model.Role;
 import com.idreamsky.permission.param.AclParam;
 import com.idreamsky.permission.service.AclService;
+import com.idreamsky.permission.service.RoleService;
+import com.idreamsky.permission.service.UserService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -28,7 +31,10 @@ import javax.annotation.Resource;
 public class AclController {
     @Resource
     private AclService aclService;
-
+    @Resource
+    private UserService userService;
+    @Resource
+    private RoleService roleService;
 
     @RequestMapping("/save")
     @ResponseBody
@@ -48,5 +54,15 @@ public class AclController {
     @ResponseBody
     public JsonData list(@RequestParam("aclModuleId") Integer aclModuleId, PageQuery pageQuery) {
         return JsonData.success(aclService.getPageByAclModuleId(aclModuleId, pageQuery));
+    }
+
+    @RequestMapping("/acls")
+    @ResponseBody
+    public JsonData acls(@RequestParam("aclId") Integer aclId) {
+        Map<String, Object> map = Maps.newHashMap();
+        List<Role> roleList = roleService.getRoleListByAclId(aclId);
+        map.put("roles", roleList);
+        map.put("users", roleService.getUserListByRoleList(roleList));
+        return JsonData.success(map);
     }
 }

@@ -6,8 +6,10 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.base.Preconditions;
 import com.idreamsky.permission.common.RequestHolder;
 import com.idreamsky.permission.dao.DeptMapper;
+import com.idreamsky.permission.dao.UserMapper;
 import com.idreamsky.permission.exception.ParamException;
 import com.idreamsky.permission.model.Dept;
+import com.idreamsky.permission.model.User;
 import com.idreamsky.permission.param.DeptParam;
 import com.idreamsky.permission.util.BeanValidator;
 import com.idreamsky.permission.util.IpUtil;
@@ -33,6 +35,8 @@ public class DeptService {
 
     @Resource
     private DeptMapper deptMapper;
+    @Resource
+    private UserMapper userMapper;
 
     public void save(DeptParam param) {
         BeanValidator.check(param);
@@ -87,6 +91,22 @@ public class DeptService {
             }
         }
         deptMapper.updateById(after);
+    }
+
+    public void delete(int deptId) {
+        Dept dept = deptMapper.selectById(deptId);
+        Preconditions.checkNotNull(dept, "待删除的部门不存在");
+
+        Integer subDeptCount = deptMapper.selectCount(Wrappers.<Dept>query().eq("parent_id", deptId));
+        if (subDeptCount > 0) {
+            throw new ParamException("当前部门下还有子部门，无法删除");
+        }
+        Integer userCount = userMapper.selectCount(Wrappers.<User>query().eq("dept_id", deptId));
+        if (userCount > 0) {
+            throw new ParamException("当前部门下还有用户，无法删除");
+        }
+
+        deptMapper.deleteById(deptId);
     }
 
     private boolean checkExist(Integer parentId, String deptName, Integer deptId) {

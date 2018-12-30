@@ -29,6 +29,51 @@
         <filter-name>encodingFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
+    <!-- druid 监控 -->
+    <filter>
+        <filter-name>druidWebStatFilter</filter-name>
+        <filter-class>com.alibaba.druid.support.http.WebStatFilter</filter-class>
+        <init-param>
+            <param-name>exclusions</param-name>
+            <param-value>*.js,*.css,*.jpg,*.png,*.ico,*.git,/sys/druid/*</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>druidWebStatFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <!-- 登陆过滤 -->
+    <filter>
+        <filter-name>loginFilter</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>loginFilter</filter-name>
+        <url-pattern>/sys/*</url-pattern>
+        <url-pattern>/admin/*</url-pattern>
+    </filter-mapping>
+    <!-- 权限控制 -->
+    <filter>
+        <filter-name>aclControllerFilter</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+        <init-param>
+            <param-name>targetBeanName</param-name>
+            <param-value>aclControllerFilter</param-value>
+        </init-param>
+        <init-param>
+            <param-name>targetFilterLifecycle</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <init-param>
+            <param-name>exclusionUrls</param-name>
+            <param-value>/sys/user/noAuth.html,/login.html</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>aclControllerFilter</filter-name>
+        <url-pattern>/sys/*</url-pattern>
+        <url-pattern>/admin/*</url-pattern>
+    </filter-mapping>
 
     <!-- spring监听器 -->
     <listener>
@@ -68,28 +113,7 @@
         <servlet-name>druidStatServlet</servlet-name>
         <url-pattern>/sys/druid/*</url-pattern>
     </servlet-mapping>
-    <filter>
-        <filter-name>druidWebStatFilter</filter-name>
-        <filter-class>com.alibaba.druid.support.http.WebStatFilter</filter-class>
-        <init-param>
-            <param-name>exclusions</param-name>
-            <param-value>*.js,*.css,*.jpg,*.png,*.ico,*.git,/sys/druid/*</param-value>
-        </init-param>
-    </filter>
-    <filter-mapping>
-        <filter-name>druidWebStatFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
-    
-    <filter>
-        <filter-name>loginFilter</filter-name>
-        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>loginFilter</filter-name>
-        <url-pattern>/sys/*</url-pattern>
-        <url-pattern>/admin/*</url-pattern>
-    </filter-mapping>
+
     
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>

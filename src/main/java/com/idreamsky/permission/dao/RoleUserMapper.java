@@ -33,10 +33,10 @@ public interface RoleUserMapper extends BaseMapper<RoleUser> {
 
     /**
      * 根据角色id列表获取用户id列表
-     * @param roleId  角色id
+     * @param roleIdList  角色ids
      * @return userIds
      */
-    List<Integer> getUserIdListByRoleIdList(Integer roleId);
+    List<Integer> getUserIdListByRoleIdList(@Param("roleIdList") List<Integer> roleIdList);
 
     /**
      * 批量插入角色用户关系

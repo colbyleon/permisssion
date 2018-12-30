@@ -9,6 +9,11 @@
             #{roleId}
         </foreach>
     </select>
+    <select id="getRoleIdListByAclId" resultType="java.lang.Integer">
+        select role_id
+        from sys_role_acl
+        where acl_id = #{aclId}
+    </select>
 
 
     <insert id="batchInsert" parameterType="map">

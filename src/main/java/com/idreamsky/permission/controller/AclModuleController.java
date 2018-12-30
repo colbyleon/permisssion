@@ -9,6 +9,7 @@ import com.idreamsky.permission.service.TreeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
@@ -54,5 +55,12 @@ public class AclModuleController {
     @ResponseBody
     public JsonData tree(){
         return JsonData.success(treeService.aclModuleTree());
+    }
+
+    @RequestMapping("/delete")
+    @ResponseBody
+    public JsonData deleteAclModule(@RequestParam("id") int id){
+        aclModuleService.delete(id);
+        return JsonData.success();
     }
 }

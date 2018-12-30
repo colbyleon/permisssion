@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:property-placeholder location="classpath:application.properties"/>
+
+    <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+        <property name="maxTotal" value="200"/>
+        <property name="minIdle" value="3"/>
+        <property name="maxIdle" value="10"/>
+        <!-- 空闲多久可清理 -->
+        <property name="minEvictableIdleTimeMillis" value="600000"/>
+        <!-- 一分钟清理一次 -->
+        <property name="timeBetweenEvictionRunsMillis" value="60000"/>
+        <property name="testOnBorrow" value="true"/>
+    </bean>
+
+    <bean id="shardedJedisPool" class="redis.clients.jedis.ShardedJedisPool" >
+        <constructor-arg index="0" ref="jedisPoolConfig"/>
+        <constructor-arg index="1">
+            <list>
+                <bean class="redis.clients.jedis.JedisShardInfo">
+                    <constructor-arg name="host" value="${redis.host}"/>
+                    <constructor-arg name="port" value="${redis.port}"/>
+                    <constructor-arg name="timeout" value="${redis.timeout}"/>
+                </bean>
+            </list>
+        </constructor-arg>
+    </bean>
+</beans>

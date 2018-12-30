@@ -41,6 +41,25 @@ public class TreeService {
     @Resource
     private AclMapper aclMapper;
 
+    /**
+     * 用户拥有的权限树
+     */
+    public List<AclModuleLevelDto> userAclTree(int userId) {
+        List<Acl> userAclList = coreService.getUserAclList(userId);
+        List<AclDto> aclDtoList = Lists.newArrayList();
+        for (Acl acl : userAclList) {
+            AclDto dto = AclDto.adapt(acl);
+            dto.setHasAcl(true);
+            dto.setChecked(true);
+            aclDtoList.add(dto);
+        }
+        return aclListToTree(aclDtoList);
+    }
+
+    /**
+     * 权限以及权限模块的树，当前角色拥有的会被选中，当前用户拥有的可以被选中
+     * @param roleId 角色id
+     */
     public List<AclModuleLevelDto> roleTree(int roleId) {
         // 1、当前用户已分配的权限点
         List<Acl> userAclList = coreService.getCurrentUserAclList();

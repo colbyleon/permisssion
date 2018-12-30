@@ -183,6 +183,8 @@
 
 
 
+
+
 </script>
 <script id="userListTemplate" type="x-tmpl-mustache">
 {{#userList}}
@@ -204,6 +206,8 @@
     </td>
 </tr>
 {{/userList}}
+
+
 </script>
 
 <script type="application/javascript">
@@ -258,10 +262,21 @@
                 e.preventDefault();
                 e.stopPropagation();
                 var deptId = $(this).attr("data-id");
-                var deptName = $(this).attr("data-name")
-                if (confirm("确定要删除部门【" + deptName + "】吗？")) {
-                    // TODO:
-                    console.log("delete dept: " + deptName);
+                var deptName = $(this).attr("data-name");
+                if (confirm("确定要删除部门[" + deptName + "]吗?")) {
+                    $.ajax({
+                        url: "/sys/dept/delete",
+                        data: {id: deptId},
+                        success: function (result) {
+                            if (result.ret) {
+                                showMessage("删除部门[" + deptName + "]", "操作成功", true);
+                                loadDeptTree();
+                            } else {
+                                showMessage("删除部门[" + deptName + "]", result.msg, false);
+                            }
+                        }
+                    });
+                } else {
                 }
             });
 
@@ -415,6 +430,24 @@
         });
 
         function bindUserClick() {
+            $(".user-acl").click(function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var userId = $(this).attr("data-id");
+                $.ajax({
+                    url: "/sys/user/acls",
+                    data: {userId:userId},
+                    type: "post",
+                    success: function (result) {
+                        if (result.ret) {
+                            console.log(result)
+                        } else {
+                            showMessage("获取用户权限数据", result.msg, false);
+                        }
+                    }
+                });
+            });
+
             $(".user-edit").click(function (e) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -459,7 +492,6 @@
             });
         }
 
-        //
         $(".dept-add").click(function () {
             $("#dialog-dept-form").dialog({
                 model: true,
@@ -512,7 +544,7 @@
                 })
             }
         }
-        
+
         function updateUser(isCreate, successCallback, failCallback) {
             $.ajax({
                 url: isCreate ? "/sys/user/save" : "/sys/user/update",
